@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-center mb-8">
         Track your expenses
       </h1>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl  mx-auto">
         <PDFUploader />
         <TransactionsList />
       </div>

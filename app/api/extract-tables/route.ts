@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
 
-    const prompt = `Extract all tables from this bank statement PDF and return the transactions in this JSON format:
+    const prompt = `Extract all tables from this bank statement PDF. Note: Return the currency type in UTF-8 format (e.g., INDIAN RUPEE = &#20B9;). Return the transactions in the following JSON format:
+
     {
       "transactions": [
         {
@@ -53,8 +54,11 @@ export async function POST(request: NextRequest) {
           "amount": number,
           "type": "credit|debit"
         }
-      ]
-    }`;
+      ],
+      "months": ["Month1", "Month2", ...],
+      "currency": "string"
+    }
+`;
     const generationConfig = {
       temperature: 0.9,
       topK: 1,
@@ -77,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Ensure response is properly formatted
     const responseText = await response.text();
-
+    console.log(responseText);
     const data = extractAndParseJSON(responseText);
 
     console.log("Raw AI Response:", data);

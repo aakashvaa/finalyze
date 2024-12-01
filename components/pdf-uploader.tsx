@@ -6,6 +6,7 @@ import { Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useTransactions } from "@/hooks/use-transactions";
+import { uploadPdf } from "@/lib/pdf-service";
 
 export default function PDFUploader() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,16 +23,8 @@ export default function PDFUploader() {
       formData.append("pdf", file);
       console.log(formData);
       try {
-        const response = await fetch("/api/extract-tables", {
-          method: "POST",
-          body: formData,
-        });
-        console.log(response);
-        if (!response.ok) throw new Error("Failed to process PDF");
-
-        const data = await response.json();
-        console.log(data);
-        setTransactions(data.transactions);
+        const data = await uploadPdf(file);
+        setTransactions(data);
         toast({
           title: "Success",
           description: "PDF processed successfully",

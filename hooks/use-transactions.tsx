@@ -12,12 +12,16 @@ interface Transaction {
 
 // Define the shape of the store
 interface TransactionsStore {
-  transactions: Transaction[]; // Array of transactions
-  setTransactions: (transactions: Transaction[]) => void; // Method to update transactions
+  data: { transactions: Transaction[]; currency: string; months: string[] }; // Store includes transactions, currency, and months
+  setTransactions: (data: {
+    transactions: Transaction[];
+    currency: string;
+    months: string[];
+  }) => void; // Method to update transactions
 }
 
 // Create the zustand store
 export const useTransactions = create<TransactionsStore>((set) => ({
-  transactions: [], // Initial state: empty transactions array
-  setTransactions: (transactions) => set(() => ({ transactions })), // Update transactions state
+  data: { transactions: [], currency: "", months: [] }, // Initial state with proper defaults
+  setTransactions: (data) => set(() => ({ data })), // Update state with new data
 }));
