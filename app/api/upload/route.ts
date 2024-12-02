@@ -51,15 +51,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const documents = await prisma.pdfDocument.findMany({
-      select: {
-        id: true,
-        filename: true,
-        createdAt: true,
-      },
-    });
-
-    return NextResponse.json({ documents });
+    return NextResponse.json({ hii: "working" });
   } catch (error) {
     console.error("Error fetching documents:", error);
     return NextResponse.json(

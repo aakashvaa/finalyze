@@ -5,15 +5,15 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadPdf } from "@/lib/pdf-service";
 import { UploadDropzone } from "./upload-dropzone";
 import { UploadProgress } from "./upload-progress";
-import { PdfViewer } from "./pdf-viewer";
 import { UploadResponse } from "@/lib/types";
-
+import { useTransactions } from "@/hooks/store";
+import TransactionsList from "./transaction";
 export function UploadForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [extractedText, setExtractedText] = useState<string>("");
   const { toast } = useToast();
-
+  const { setTransactions } = useTransactions();
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -33,8 +33,9 @@ export function UploadForm() {
 
       try {
         const data = await uploadPdf(file);
-        // console.log("hit", data.content.split("\n"));
-        // setExtractedText(data.content);
+        console.log("hit", data);
+        setTransactions(data);
+        // setExtractedText(data);
         toast({
           title: "Success",
           description: "PDF uploaded and processed successfully",
@@ -56,9 +57,10 @@ export function UploadForm() {
 
   return (
     <div className="space-y-6">
-      <UploadDropzone onDrop={handleDrop} />
+      <UploadDropzone loading={isUploading} onDrop={handleDrop} />
       {isUploading && <UploadProgress progress={progress} />}
-      <PdfViewer content={extractedText} />
+
+      <TransactionsList />
     </div>
   );
 }
