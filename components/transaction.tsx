@@ -10,6 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import TableTranction from "./Table";
+import { describe } from "node:test";
+import Navbar from "./Navbar";
 
 export default function TransactionsList() {
   const { data } = useTransactions();
@@ -85,6 +88,7 @@ export default function TransactionsList() {
 
   return (
     <div className="mt-8">
+      <Navbar />
       <h2 className="text-2xl font-semibold mb-4">
         Extracted Transactions for {months.length} months{" "}
       </h2>
@@ -138,19 +142,14 @@ export default function TransactionsList() {
               <TableBody>
                 {Object.entries(transactions).map(
                   ([description, { totalAmount, count }]) => (
-                    <TableRow key={`${key}-${description}`}>
-                      <TableCell>{description}</TableCell>
-                      <TableCell>{count}</TableCell>
-                      <TableCell className="text-right">
-                        <span
-                          className={
-                            key !== "debit" ? "text-green-600" : "text-red-600"
-                          }
-                        >
-                          {currency} {Math.abs(totalAmount).toFixed(2)}
-                        </span>
-                      </TableCell>
-                    </TableRow>
+                    <TableTranction
+                      key={`${key}-${description}`}
+                      type={key}
+                      totalAmount={totalAmount}
+                      description={description}
+                      count={count}
+                      currency={currency}
+                    />
                   ),
                 )}
               </TableBody>
