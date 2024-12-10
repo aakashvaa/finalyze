@@ -1,17 +1,21 @@
-import { useState } from "react";
-
-const navbars = ["Detailed", "Compact ", "Credit ", "Debit ", "Investment"];
-export default function Navbar() {
-  const [select, setSelect] = useState<string>(navbars[0]);
+const navbars = ["compact", "credit", "debit", "investment"];
+export default function Navbar({
+  select,
+  setSelect,
+}: {
+  select: string;
+  setSelect: (name: string) => void;
+}) {
+  console.log(select);
   return (
     <div className="flex my-5 w-fit  divide-x rounded-sm flex-1 bg-[#fefefe] text-sm border-separate border border-border ">
       {navbars.map((name, i) => (
         <p
           onClick={() => setSelect(name)}
-          className={` px-5 border-separate  py-2  cursor-pointer ${select === name && "bg-secondary "}`}
+          className={` px-5 border-separate  py-2  cursor-pointer ${select == name && "bg-secondary "}`}
           key={`${i}-${name}`}
         >
-          {name}
+          {name.slice(0, 1).toUpperCase() + name.slice(1)}
         </p>
       ))}
     </div>

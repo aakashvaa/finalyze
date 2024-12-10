@@ -1,5 +1,5 @@
 import { TableRow } from "@/components/ui/table";
-import { Transaction } from "@/hooks/store";
+import { TypeTransaction } from "@/type/store/typeStore";
 import axios from "axios";
 import { Currency } from "lucide-react";
 const dateRegex = /\d{2}\/\d{2}\/\d{2}/;
@@ -47,7 +47,7 @@ function splitByDates(line: string) {
 
 function parseBankStatement(text: string) {
   const lines = text.split("\n");
-  const tableRows: Transaction[] = [];
+  const tableRows: TypeTransaction[] = [];
   const regex = /^\d{2}\/\d{2}\/\d{2}/; // Match rows starting with a date (e.g., 01/11/24)
   let currency = "";
   let prev = null;
