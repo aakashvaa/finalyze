@@ -19,6 +19,8 @@ interface TypeMapTransaction {
   credit: Record<string, { totalAmount: number; count: number }>;
   debit: Record<string, { totalAmount: number; count: number }>;
   investment: Record<string, { totalAmount: number; count: number }>;
+  food: Record<string, { totalAmount: number; count: number }>;
+  bill: Record<string, { totalAmount: number; count: number }>;
 }
 
 interface TypeMapTransactionStore {

@@ -8,7 +8,7 @@ import {
 import { create } from "zustand";
 
 export const useMapTransaction = create<TypeMapTransactionStore>((set) => ({
-  dataMap: { credit: {}, debit: {}, investment: {} },
+  dataMap: { credit: {}, debit: {}, investment: {}, food: {}, bill: {} },
   setDataMap: (data: TypeMapTransaction) =>
     set((state) => ({ ...state, dataMap: data })),
 }));
