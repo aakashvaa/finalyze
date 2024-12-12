@@ -6,7 +6,6 @@ export default function Navbar({
   select: string;
   setSelect: (name: string) => void;
 }) {
-  console.log(select);
   return (
     <div className="flex my-5 w-fit  divide-x rounded-sm flex-1 bg-[#fefefe] text-sm border-separate border border-border ">
       {navbars.map((name, i) => (

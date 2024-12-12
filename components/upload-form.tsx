@@ -54,7 +54,7 @@ export function UploadForm() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <UploadDropzone loading={isUploading} onDrop={handleDrop} />
     </div>
   );

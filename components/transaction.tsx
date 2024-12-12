@@ -20,6 +20,10 @@ import { bill, foodKeywords, investmentKeywords } from "@/utils/constant";
 export default function TransactionsList() {
   const { data } = useTransactions();
   const [select, setSelect] = useState<string>("compact");
+  const [totalInvestmentAmount, setTotalInvestmentAmount] = useState<number>(0);
+  const [totalCreditedAmount, setTotalCreditedAmount] = useState<number>(0);
+  const [totalDebitedAmount, setTotalDebittedAmount] = useState<number>(0);
+
   const { dataMap, setDataMap } = useMapTransaction();
 
   const { transactions, currency, months } = data;
@@ -43,6 +47,11 @@ export default function TransactionsList() {
       bill: {},
     };
 
+    let totalInvestment = 0;
+
+    let totalCredit = 0;
+    let totalDebit = 0;
+
     transactions.forEach((transaction) => {
       let { description, amount, type } = transaction;
 
@@ -55,27 +64,38 @@ export default function TransactionsList() {
         description.toUpperCase().includes(keyword),
       );
 
-      const isFood = foodKeywords.some((keyword) =>
-        description.toUpperCase().includes(keyword),
-      );
+      const isFood = foodKeywords.some((keyword) => {
+        return description.toUpperCase().includes(keyword.toUpperCase());
+      });
       const isBill = bill.some((keyword) =>
-        description.toUpperCase().includes(keyword),
+        description.toUpperCase().includes(keyword.toUpperCase()),
       );
-      if (isInvestment) {
-        if (map.investment[description]) {
-          map.investment[description].totalAmount += +amount;
-          map.investment[description].count += 1;
+      if (!isNaN(+amount)) {
+        if (isInvestment && type === "debit") {
+          console.log(+amount, description);
+          totalInvestment += parseFloat(amount);
         } else {
-          map.investment[description] = { totalAmount: +amount, count: 1 };
+          // console.log(parseFloat(amount), description);
+          if (type === "credit") totalCredit += parseFloat(amount);
+          else if (type === "debit") totalDebit += parseFloat(amount);
+        }
+      }
+
+      if (isBill) {
+        if (map.bill[description]) {
+          map.bill[description].totalAmount += +amount;
+          map.bill[description].count += 1;
+        } else {
+          map.bill[description] = { totalAmount: +amount, count: 1 };
         }
       } else if (isFood) {
-        if (map.investment[description]) {
-          map.investment[description].totalAmount += +amount;
-          map.investment[description].count += 1;
+        if (map.food[description]) {
+          map.food[description].totalAmount += +amount;
+          map.food[description].count += 1;
         } else {
-          map.investment[description] = { totalAmount: +amount, count: 1 };
+          map.food[description] = { totalAmount: +amount, count: 1 };
         }
-      } else if (isBill) {
+      } else if (isInvestment) {
         if (map.investment[description]) {
           map.investment[description].totalAmount += +amount;
           map.investment[description].count += 1;
@@ -94,6 +114,10 @@ export default function TransactionsList() {
       }
     });
 
+    setTotalCreditedAmount(totalCredit);
+    setTotalDebittedAmount(totalDebit);
+    setTotalInvestmentAmount(totalInvestment);
+
     setTransactionMap(map);
     setDataMap(map);
   }, [transactions]);
@@ -101,7 +125,7 @@ export default function TransactionsList() {
   if (!transactions.length) return null;
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 font-sans">
       <Navbar select={select} setSelect={setSelect} />
 
       {/* <h2 className="text-2xl font-semibold mb-4">
@@ -111,50 +135,46 @@ export default function TransactionsList() {
         <DetailedTable transactions={transactions} currency={currency} />
       </div> */}
       {select == "compact" ? (
-        Object.entries(transactionMap).map(([key, transactions]) => (
-          <div key={key}>
-            <h2 className="text-2xl font-semibold mt-8 mb-4">
-              Total {key.charAt(0).toUpperCase() + key.slice(1)} Transactions
-            </h2>
-            {Object.entries(
-              transactions as Record<
-                string,
-                { totalAmount: number; count: number }
-              >,
-            ).length === 0 ? (
-              <p className="text-center">No Transactions</p>
-            ) : (
-              <div className="border rounded-lg bg-[#fdfdfdcc] max-h-[700px] overflow-auto shadow-sm drop-shadow-sm">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Transaction Count</TableHead>
-                      <TableHead className="text-right">Total Amount</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {Object.entries(
-                      transactions as Record<
-                        string,
-                        { totalAmount: number; count: number }
-                      >,
-                    ).map(([description, { totalAmount, count }]) => (
-                      <TableTranction
-                        key={`${key}-${description}`}
-                        type={key}
-                        totalAmount={totalAmount}
-                        description={description}
-                        count={count}
-                        currency={currency}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+        <div className="flex flex-col text-sm font-medium divide-y border rounded-sm">
+          <div className="flex w-full py-5 font-semibold justify-center text-center items-center divide-x rounded-sm ">
+            <p className="text-green-500 basis-1/3  ">
+              Total Credited Amount : <span> {totalCreditedAmount} </span>{" "}
+            </p>
+
+            <p className="text-red-500 basis-1/3   ">
+              Total Debited Amount : <span> {totalDebitedAmount} </span>{" "}
+            </p>
+            <p className="text-blue-500  basis-1/3  ">
+              Total Invested Amount : <span> {totalInvestmentAmount} </span>{" "}
+            </p>
           </div>
-        ))
+          <p className="text-center py-5 ">
+            Total Savings Amount :{" "}
+            <span
+              className={` text-center px-10 py-1 text-white rounded-md ${totalCreditedAmount - totalDebitedAmount > 0 ? "bg-green-800" : "bg-red-800"} `}
+            >
+              {" "}
+              {(totalCreditedAmount - totalDebitedAmount).toFixed(2)}{" "}
+            </span>{" "}
+          </p>
+          <div className="flex  flex-col  divide-y">
+            <p className="px-3 py-5">
+              To meet the 80/20 rule: Reduce non-investment debits to less than{" "}
+              {(0.8 * totalCreditedAmount).toFixed(2)} ( Reduce by{" "}
+              {+((totalDebitedAmount / totalCreditedAmount) * 100).toFixed(2) -
+                80}
+              %)
+            </p>
+            <p className="px-3 py-5">
+              <span className="">
+                The debit amount (excluding investment) is{" "}
+                {((totalDebitedAmount / totalCreditedAmount) * 100).toFixed(2)}%
+                of the total credited amount, which is higher than the 80%
+                threshold.
+              </span>
+            </p>
+          </div>
+        </div>
       ) : Object.entries(
           transactionMap[select as "credit" | "debit" | "investment"],
         ).length === 0 ? (

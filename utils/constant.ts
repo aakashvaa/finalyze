@@ -69,4 +69,21 @@ const investmentKeywords = [
   "SIP",
   "TRADING",
 ];
+
+const homeNecessitiesKeywords = [
+  "SUPERMARKET",
+  "GROCERY",
+  "FOOD MART",
+  "FOOD STORE",
+  "WHOLESALE",
+  "VEGETABLE MARKET",
+  "FRUIT MARKET",
+  "DAIRY",
+  "BAKERY",
+  "PROVISION STORE",
+  "KIRANA",
+  "MEAT SHOP",
+  "FISH MARKET",
+];
+
 export { investmentKeywords, bill, foodKeywords };
