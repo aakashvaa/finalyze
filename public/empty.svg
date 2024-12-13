@@ -1,0 +1,20 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 400 250"
+  fill="none"
+  style="display: block; margin: auto; width: 100%; max-width: 400px; height: auto;"
+>
+  <!-- Background Rectangle -->
+  <rect width="400" height="230" fill="#F3F4F6" rx="15"/>
+
+  <!-- Sad Face Icon -->
+  <circle cx="200" cy="100" r="50" fill="#E5E7EB"/>
+  <circle cx="180" cy="90" r="5" fill="#374151"/>
+  <circle cx="220" cy="90" r="5" fill="#374151"/>
+  <path d="M170 120 Q200 140 230 120" stroke="#374151" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Text Below Icon -->
+  <text x="50%" y="190" text-anchor="middle" fill="#374151" font-family="Arial, sans-serif" font-size="16">
+    No Transaction Found
+  </text>
+</svg>

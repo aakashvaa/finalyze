@@ -16,10 +16,15 @@ import Navbar from "./Navbar";
 import DetailedTable from "./tables/DetailedTable";
 import { TypeMapTransaction } from "@/type/store/typeStore";
 import { bill, foodKeywords, investmentKeywords } from "@/utils/constant";
+import {
+  FuturisticHighIncomeIndicator,
+  FuturisticLowIncomeIndicator,
+} from "./arrow/Arrow";
+import Image from "next/image";
 
 export default function TransactionsList() {
   const { data } = useTransactions();
-  const [select, setSelect] = useState<string>("compact");
+  const [select, setSelect] = useState<string>("details");
   const [totalInvestmentAmount, setTotalInvestmentAmount] = useState<number>(0);
   const [totalCreditedAmount, setTotalCreditedAmount] = useState<number>(0);
   const [totalDebitedAmount, setTotalDebittedAmount] = useState<number>(0);
@@ -134,51 +139,130 @@ export default function TransactionsList() {
       <div className="border rounded-lg bg-[#fdfdfdcc] max-h-[700px] p-1 overflow-auto shadow-sm drop-shadow-sm">
         <DetailedTable transactions={transactions} currency={currency} />
       </div> */}
-      {select == "compact" ? (
+      {select == "details" ? (
         <div className="flex flex-col text-sm font-medium divide-y border rounded-sm">
-          <div className="flex w-full py-5 font-semibold justify-center text-center items-center divide-x rounded-sm ">
-            <p className="text-green-500 basis-1/3  ">
-              Total Credited Amount : <span> {totalCreditedAmount} </span>{" "}
+          <div className="flex w-full py-5 font-semibold justify-center text-center items-center divide-x rounded-sm">
+            <p className="text-green-500 basis-1/3">
+              Total Credited Amount : <span>{totalCreditedAmount}</span>
             </p>
-
-            <p className="text-red-500 basis-1/3   ">
-              Total Debited Amount : <span> {totalDebitedAmount} </span>{" "}
+            <p className="text-red-500 basis-1/3">
+              Total Debited Amount : <span>{totalDebitedAmount}</span>
             </p>
-            <p className="text-blue-500  basis-1/3  ">
-              Total Invested Amount : <span> {totalInvestmentAmount} </span>{" "}
+            <p className="text-blue-500 basis-1/3">
+              Total Invested Amount : <span>{totalInvestmentAmount}</span>
             </p>
           </div>
-          <p className="text-center py-5 ">
+          <div className="text-center py-5 flex justify-center items-center">
             Total Savings Amount :{" "}
             <span
-              className={` text-center px-10 py-1 text-white rounded-md ${totalCreditedAmount - totalDebitedAmount > 0 ? "bg-green-800" : "bg-red-800"} `}
+              className={`text-center mx-3 px-10 py-1 h-fit border rounded-md`}
             >
-              {" "}
-              {(totalCreditedAmount - totalDebitedAmount).toFixed(2)}{" "}
-            </span>{" "}
-          </p>
-          <div className="flex  flex-col  divide-y">
+              {(totalCreditedAmount - totalDebitedAmount).toFixed(2)}
+            </span>
+            {totalCreditedAmount - totalDebitedAmount > 0 ? (
+              <FuturisticHighIncomeIndicator />
+            ) : (
+              <FuturisticLowIncomeIndicator />
+            )}
+          </div>
+          <div className="flex flex-col divide-y">
             <p className="px-3 py-5">
-              To meet the 80/20 rule: Reduce non-investment debits to less than{" "}
-              {(0.8 * totalCreditedAmount).toFixed(2)} ( Reduce by{" "}
+              {totalCreditedAmount - totalDebitedAmount > 0 ? (
+                <>
+                  To meet the 50/30/20 rule: Reduce non-investment debits to
+                  less than {(0.8 * totalCreditedAmount).toFixed(2)} (Reduce by{" "}
+                  {Math.abs(
+                    80 -
+                      +(
+                        (totalDebitedAmount / totalCreditedAmount) *
+                        100
+                      ).toFixed(2),
+                  )}
+                  %).
+                </>
+              ) : (
+                <>
+                  You have overspent, and your non-investment debits exceed the
+                  credited amount. Consider reducing your expenses to less than{" "}
+                  {(0.8 * totalCreditedAmount).toFixed(2)}.
+                </>
+              )}
+            </p>
+            <p className="px-3 py-5">
+              To meet the 50/30/20 rule: Reduce non-investment debits to less
+              than {(0.8 * totalCreditedAmount).toFixed(2)} ( Reduce by{" "}
               {+((totalDebitedAmount / totalCreditedAmount) * 100).toFixed(2) -
                 80}
-              %)
+              % )
             </p>
-            <p className="px-3 py-5">
-              <span className="">
+
+            <div className="px-3 py-5">
+              <span>
                 The debit amount (excluding investment) is{" "}
                 {((totalDebitedAmount / totalCreditedAmount) * 100).toFixed(2)}%
-                of the total credited amount, which is higher than the 80%
-                threshold.
+                of the total credited amount, which is{" "}
+                {+((totalDebitedAmount / totalCreditedAmount) * 100).toFixed(
+                  2,
+                ) > 80
+                  ? "higher than the 80% threshold."
+                  : "within the acceptable threshold."}
               </span>
-            </p>
+            </div>
+
+            <div className="w-full p-5">
+              <span className="block font-semibold mb-2">
+                Expected Allocations:
+              </span>
+              <div className="border rounded-sm overflow-auto flex w-full divide-x-2 ">
+                <div className=" basis-2/3 divide-y-2 ">
+                  <div className="flex divide-x-2  w-full  items-center">
+                    <div className="flex w-[55%] flex-col ">
+                      <p className="p-3 flex justify-between ">
+                        <span className="font-medium">50% Essentials</span>
+                        <span className="">:</span>
+                        {(0.5 * totalCreditedAmount).toFixed(2)}
+                      </p>
+                      <p className="p-3 flex justify-between">
+                        <span className="font-medium">30% Lifestyle</span>
+                        <span className="">:</span>
+                        {(0.3 * totalCreditedAmount).toFixed(2)}
+                      </p>
+                    </div>
+                    <p className="flex  justify-between basis-1/2  py-10 h-full   px-5">
+                      <p className="font-medium h-full pr-3 ">50% + 30%</p>
+                      <span>:</span>
+                      <span>
+                        {(
+                          0.5 * totalCreditedAmount +
+                          0.3 * totalCreditedAmount
+                        ).toFixed(2)}
+                      </span>
+                    </p>
+                  </div>
+                  <div className=" w-full h-[38%] flex justify-center items-center">
+                    <div className="flex justify-between w-1/2">
+                      <span className="font-medium">20% Investments</span>{" "}
+                      <span className="">:</span>
+                      {(0.2 * totalCreditedAmount).toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+                <p className=" text-start flex justify-between basis-1/3 py-[4.5rem] px-5 h-full">
+                  <p className="font-medium h-full">50% + 30% + 20%</p>
+                  <span>: </span>
+                  {totalCreditedAmount.toFixed(2)}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      ) : Object.entries(
+      ) : transactionMap &&
+        Object.entries(
           transactionMap[select as "credit" | "debit" | "investment"],
         ).length === 0 ? (
-        <p className="text-center">No Transactions</p>
+        <div className="w-full h-full py-10 text-[#b0b0b0] flex-col flex justify-center items-center">
+          <Image src="empty.svg" alt="empty" width={500} height={500} />
+        </div>
       ) : (
         <div className="border rounded-lg bg-[#fdfdfdcc] h-auto max-h-[700px] overflow-auto shadow-sm drop-shadow-sm">
           <Table>

@@ -1,4 +1,4 @@
-const navbars = ["compact", "credit", "debit", "investment", "food", "bill"];
+const navbars = ["details", "credit", "debit", "investment", "food", "bill"];
 export default function Navbar({
   select,
   setSelect,
