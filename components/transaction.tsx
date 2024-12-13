@@ -21,6 +21,9 @@ import {
   FuturisticLowIncomeIndicator,
 } from "./arrow/Arrow";
 import Image from "next/image";
+import InvestmentChart from "./InvestmentChart";
+import InvestmentDoughnutChart from "./InvestmentChart";
+import InvestmentCard from "./InvestmentChart";
 
 export default function TransactionsList() {
   const { data } = useTransactions();
@@ -139,32 +142,52 @@ export default function TransactionsList() {
       <div className="border rounded-lg bg-[#fdfdfdcc] max-h-[700px] p-1 overflow-auto shadow-sm drop-shadow-sm">
         <DetailedTable transactions={transactions} currency={currency} />
       </div> */}
+      <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="text-center p-4 bg-[#509E9017] rounded-lg">
+          <div className="text-2xl font-bold text-[#509E90] ">
+            {totalCreditedAmount}
+          </div>
+          <div className="text-sm text-gray-600">Total Credited Amount</div>
+        </div>
+        <div className="text-center p-4 bg-[#E76E5017] rounded-lg">
+          <div className="text-2xl font-bold text-[#E76E50]">
+            {totalDebitedAmount}
+          </div>
+          <div className="text-sm text-gray-600">
+            Total Non-Investment Amount
+          </div>
+        </div>
+        <div className="text-center p-4 bg-[#509E9017] rounded-lg">
+          <div className="text-2xl font-bold text-[#509E90] ">
+            {totalInvestmentAmount}
+          </div>
+          <div className="text-sm text-gray-600">Total Investment</div>
+        </div>
+      </div>
       {select == "details" ? (
         <div className="flex flex-col text-sm font-medium divide-y border rounded-sm">
-          <div className="flex w-full py-5 font-semibold justify-center text-center items-center divide-x rounded-sm">
-            <p className="text-green-500 basis-1/3">
-              Total Credited Amount : <span>{totalCreditedAmount}</span>
-            </p>
-            <p className="text-red-500 basis-1/3">
-              Total Debited Amount : <span>{totalDebitedAmount}</span>
-            </p>
-            <p className="text-blue-500 basis-1/3">
-              Total Invested Amount : <span>{totalInvestmentAmount}</span>
-            </p>
+          <div className="text-center w-full py-5 flex xl:flex-row flex-col justify-center items-center">
+            <div className="flex  lg:flex-row  w-[90%]  text-center py-5 pl-4 justify-center items-center">
+              Total Savings Amount :{" "}
+              <div className="flex justify-center items-center">
+                <span
+                  className={`text-center mx-3 px-10 py-1 h-fit border rounded-md`}
+                >
+                  {(totalCreditedAmount - totalDebitedAmount).toFixed(2)}
+                </span>
+                {totalCreditedAmount - totalDebitedAmount > 0 ? (
+                  <FuturisticHighIncomeIndicator />
+                ) : (
+                  <FuturisticLowIncomeIndicator />
+                )}
+              </div>
+            </div>
+            <InvestmentCard
+              invest={totalInvestmentAmount}
+              nonInvest={totalDebitedAmount}
+            />
           </div>
-          <div className="text-center py-5 flex justify-center items-center">
-            Total Savings Amount :{" "}
-            <span
-              className={`text-center mx-3 px-10 py-1 h-fit border rounded-md`}
-            >
-              {(totalCreditedAmount - totalDebitedAmount).toFixed(2)}
-            </span>
-            {totalCreditedAmount - totalDebitedAmount > 0 ? (
-              <FuturisticHighIncomeIndicator />
-            ) : (
-              <FuturisticLowIncomeIndicator />
-            )}
-          </div>
+
           <div className="flex flex-col divide-y">
             <p className="px-3 py-5">
               {totalCreditedAmount - totalDebitedAmount > 0 ? (

@@ -9,7 +9,7 @@ export default function LogoBar() {
 
   return (
     <div
-      className={`flex w-[80%] gap-5 ${transactions.length === 0 ? " flex-col" : "flex-row px-32 justify-evenly "}`}
+      className={`flex w-full md:w-[80%] gap-5 ${transactions.length === 0 ? " flex-col" : "flex-row md:px-32 justify-evenly "}`}
     >
       <div
         className={`flex justify-center align-middle gap-10  items-center ${transactions.length === 0 ? "flex" : "hidden "}`}
