@@ -17,7 +17,7 @@ export default function LogoBar() {
         <Image src="XpenseLogo.svg" alt="logo" width={35} height={35} />
         {transactions.length === 0 && (
           <h1 className="text-4xl font-light flex text-center ">
-            Track{" "}
+            Know{" "}
             <Image
               className="ml-4"
               src="X .svg"
