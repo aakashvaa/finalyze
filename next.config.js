@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  experimental: {
+    serverComponentsExternalPackages: ["pdf-parse"],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

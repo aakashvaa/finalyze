@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import pdfParse from "pdf-parse";
+import { PrismaClient } from "@prisma/client";
+import fs from "fs/promises";
+import path from "path";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse the uploaded file from the request
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -13,42 +18,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Convert the File object to a Buffer for sending to the Gemini API
+    // Convert File to Buffer directly
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Define Gemini API endpoint and API key
-    const geminiEndpoint = "https://api.gemini.com/v1/extract"; // Replace with the actual Gemini API endpoint
-    const apiKey = process.env.GEMINI_API_KEY; // Ensure the API key is stored securely in environment variables
+    // Parse PDF content
+    const pdfData = await pdfParse(buffer);
 
-    // Send the PDF to Gemini API for table extraction
-    const response = await axios.post(geminiEndpoint, buffer, {
-      headers: {
-        "Content-Type": "application/pdf", // Indicate the file type
-        Authorization: `Bearer ${apiKey}`, // Include the API key for authentication
-        Task: "extract_table", // Specify the task for the Gemini API
-      },
-      params: {
-        format: "json", // Ensure the API returns data in JSON format
-      },
-    });
+    // // Optionally save to database
+    // const document = await prisma.pdfDocument.create({
+    //   data: {
+    //     filename: file.name,
+    //     content: pdfData.text,
+    //   },
+    // });
 
-    // Process the response from Gemini API
-    const tableData = response.data; // Adjust this based on the Gemini API response structure
-
-    // Return the extracted table data to the client
     return NextResponse.json({
-      message: "Table extracted successfully",
-      tableData,
+      message: "PDF parsed successfully",
+      content: pdfData.text,
     });
-  } catch (error: any) {
-    console.error("Error processing Gemini API request:", error.message);
-
-    // Handle errors and provide feedback to the client
+  } catch (error) {
+    console.error("Error processing PDF:", error);
     return NextResponse.json(
       {
-        error: "Failed to process PDF with Gemini API",
-        details: error.response?.data || error.message,
+        error: "Failed to process PDF",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    return NextResponse.json({ hii: "working" });
+  } catch (error) {
+    console.error("Error fetching documents:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch documents",
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
     );

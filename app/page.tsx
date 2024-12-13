@@ -1,16 +1,17 @@
-import PDFUploader from "@/components/pdf-uploader";
-import TransactionsList from "@/components/transactions-list";
+import LogoBar from "@/components/LogoBar";
+import TransactionsList from "@/components/transaction";
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Track your expenses
-      </h1>
-      <div className="max-w-4xl  mx-auto">
-        <PDFUploader />
+    <main className="relative  w-full h-screen overflow-y-auto overflow-x-hidden  items-center mx-auto px-4 flex flex-col  py-8">
+      <LogoBar />
+
+      <div className=" w-full lg:w-[65%] mx-auto">
         <TransactionsList />
       </div>
+
+      {/* Bottom Shade */}
+      <div className="fixed bottom-0 left-0 w-full  h-20 bg-gradient-to-t from-gray-200 to-transparent pointer-events-none"></div>
     </main>
   );
 }
