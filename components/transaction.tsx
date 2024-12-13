@@ -36,14 +36,6 @@ export default function TransactionsList() {
 
   const { transactions, currency, months } = data;
 
-  const [transactionMap, setTransactionMap] = useState<TypeMapTransaction>({
-    credit: {},
-    debit: {},
-    investment: {},
-    food: {},
-    bill: {},
-  });
-
   useEffect(() => {
     if (!transactions.length) return;
 
@@ -126,7 +118,6 @@ export default function TransactionsList() {
     setTotalDebittedAmount(totalDebit);
     setTotalInvestmentAmount(totalInvestment);
 
-    setTransactionMap(map);
     setDataMap(map);
   }, [transactions]);
 
@@ -279,10 +270,9 @@ export default function TransactionsList() {
             </div>
           </div>
         </div>
-      ) : transactionMap &&
-        Object.entries(
-          transactionMap[select as "credit" | "debit" | "investment"],
-        ).length === 0 ? (
+      ) : dataMap &&
+        Object.entries(dataMap[select as "credit" | "debit" | "investment"])
+          .length === 0 ? (
         <div className="w-full h-full py-10 text-[#b0b0b0] flex-col flex justify-center items-center">
           <Image src="empty.svg" alt="empty" width={500} height={500} />
         </div>
@@ -298,7 +288,7 @@ export default function TransactionsList() {
             </TableHeader>
             <TableBody>
               {Object.entries(
-                transactionMap[select as "credit" | "debit" | "investment"],
+                dataMap[select as "credit" | "debit" | "investment"],
               ).map(([description, { totalAmount, count }]) => (
                 <TableTranction
                   key={`${select}-${description}`}
