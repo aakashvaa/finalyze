@@ -18,7 +18,8 @@ import {
   TiltShift2,
 } from '@react-three/postprocessing'
 import { easing } from 'maath'
-import { useRef } from 'react'
+import { Ref, useRef, useState } from 'react'
+import { Mesh } from 'three'
 
 const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
 useGLTF.preload('/bomb-gp.glb')
@@ -85,15 +86,15 @@ const Drop = ({ ...props }: JSX.IntrinsicElements['mesh']) => (
   </mesh>
 )
 const Knot = (props: JSX.IntrinsicElements['mesh']) => {
-  const ref = useRef(null)
+  const [rotation, setRotation] = useState(0)
+
   useFrame(() => {
-    if (ref.current) {
-      ;(ref.current as THREE.Mesh).rotation.y += 0.01
-    }
+    setRotation((prevRotation) => prevRotation + 0.01)
   })
+
   return (
-    <mesh ref={ref} receiveShadow castShadow {...props}>
-      <torusKnotGeometry args={[3, 1, 256, 32]} />
+    <mesh rotation={[0, rotation, 0]} receiveShadow castShadow {...props}>
+      <torusKnotGeometry args={[3, 1, 128, 16]} />
       <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
     </mesh>
   )
