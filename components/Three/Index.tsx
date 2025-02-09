@@ -51,7 +51,7 @@ export const Three = () => (
           onUpdate={(self) => self.lookAt(0, 0, 0)}
         />
       </Environment>
-      <EffectComposer disableNormalPass>
+      <EffectComposer enableNormalPass={false}>
         <N8AO aoRadius={1} intensity={2} />
         <Bloom mipmapBlur luminanceThreshold={0.8} intensity={2} levels={8} />
         <TiltShift2 blur={0.2} />
@@ -78,18 +78,17 @@ function Rig() {
   return <></>
 }
 
-const Drop = (props) => (
+const Drop = ({ ...props }: JSX.IntrinsicElements['mesh']) => (
   <mesh>
     <sphereGeometry args={[1, 64, 64]} />
     <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
   </mesh>
 )
-
-const Knot = (props) => {
-  const ref = useRef()
+const Knot = (props: JSX.IntrinsicElements['mesh']) => {
+  const ref = useRef(null)
   useFrame(() => {
     if (ref.current) {
-      ref.current.rotation.y += 0.01 // Adjust the rotation speed as needed
+      ;(ref.current as THREE.Mesh).rotation.y += 0.01
     }
   })
   return (
