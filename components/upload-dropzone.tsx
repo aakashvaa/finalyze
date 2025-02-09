@@ -1,52 +1,52 @@
-"use client";
+'use client'
 
-import { useTransactions } from "@/hooks/store";
-import { Loader2, Upload } from "lucide-react";
-import Image from "next/image";
-import { useDropzone } from "react-dropzone";
-import { cn } from "@/lib/utils";
+import { useTransactions } from '@/hooks/store'
+import { Loader2, Upload } from 'lucide-react'
+import Image from 'next/image'
+import { useDropzone } from 'react-dropzone'
+import { cn } from '@/lib/utils'
 
 interface UploadDropzoneProps {
-  onDrop: (files: File[]) => void;
-  loading: boolean;
+  onDrop: (files: File[]) => void
+  loading: boolean
 }
 
 export function UploadDropzone({ onDrop, loading }: UploadDropzoneProps) {
-  const { data } = useTransactions();
-  const { transactions } = data;
+  const { data } = useTransactions()
+  const { transactions } = data
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "application/pdf": [".pdf"],
+      'application/pdf': ['.pdf'],
     },
     multiple: false,
     disabled: loading, // Disable dropzone when loading
-  });
+  })
 
   return (
     <div
       {...getRootProps()}
       className={cn(
-        "border-2 border-dashed w-full flex justify-center items-center rounded-lg p-5 text-center cursor-pointer transition-colors",
+        'border-2 border-dashed  w-full flex justify-center items-center rounded-lg p-5 text-center cursor-pointer transition-colors bg-black/[0.4] backdrop-blur-md',
         loading
-          ? "border-gray-300 bg-gray-100 cursor-not-allowed"
+          ? 'border-black/[0.1] cursor-not-allowed'
           : isDragActive
-            ? "border-primary bg-primary/5"
-            : "border-gray-300",
-        transactions.length ? "h-fit" : "h-80",
+          ? 'border-primary bg-black/[0.1]'
+          : 'border-black/[0.1]',
+        transactions.length ? 'h-fit' : 'h-96'
       )}
     >
       <input {...getInputProps()} disabled={loading} />
       <div
-        className={cn("w-full flex flex-col justify-center items-center gap-2")}
+        className={cn('w-full flex flex-col justify-center items-center gap-2')}
       >
         {loading ? (
-          <Loader2 className={cn("h-4 w-4 animate-spin")} />
+          <Loader2 className={cn('h-4 w-4 animate-spin')} />
         ) : (
           <>
             {!loading && transactions.length ? (
               <Image
-                className={cn(loading ? "text-gray-300" : "text-gray-400")}
+                className={cn(loading ? 'text-gray-300' : 'text-gray-400')}
                 src="XpenseLogo.svg"
                 alt="logo"
                 width={35}
@@ -54,23 +54,24 @@ export function UploadDropzone({ onDrop, loading }: UploadDropzoneProps) {
               />
             ) : (
               <Upload
+                size={35}
                 className={cn(
-                  "w-full",
-                  loading ? "text-gray-300" : "text-gray-400",
+                  'w-full',
+                  loading ? 'text-white/[0.2] ' : 'text-white/[0.4]'
                 )}
               />
             )}
             {transactions.length === 0 && (
               <>
-                <p className={cn("text-lg font-medium")}>
+                <p className={cn('text-lg font-medium')}>
                   {loading
-                    ? "Uploading, please wait..."
+                    ? 'Uploading, please wait...'
                     : isDragActive
-                      ? "Drop the PDF here"
-                      : "Drag & drop a PDF file here, or click to select"}
+                    ? 'Drop the PDF here'
+                    : 'Drag & drop a PDF file here, or click to select'}
                 </p>
-                <p className={cn("text-sm text-gray-500")}>
-                  {loading ? "" : "Only PDF files are supported"}
+                <p className={cn('text-sm text-white/[0.7]')}>
+                  {loading ? '' : 'Only PDF files are supported'}
                 </p>
               </>
             )}
@@ -78,5 +79,5 @@ export function UploadDropzone({ onDrop, loading }: UploadDropzoneProps) {
         )}
       </div>
     </div>
-  );
+  )
 }
