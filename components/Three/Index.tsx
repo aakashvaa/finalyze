@@ -5,8 +5,6 @@ import {
   useGLTF,
   Float,
   Lightformer,
-  Text,
-  Html,
   ContactShadows,
   Environment,
   MeshTransmissionMaterial,
@@ -18,10 +16,8 @@ import {
   TiltShift2,
 } from '@react-three/postprocessing'
 import { easing } from 'maath'
-import { Ref, useRef, useState } from 'react'
-import { Mesh } from 'three'
+import { useState } from 'react'
 
-const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
 useGLTF.preload('/bomb-gp.glb')
 
 export const Three = () => (
