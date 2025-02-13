@@ -29,6 +29,8 @@ export default function TableTranction({
     TypeTransaction[]
   >([])
 
+  console.log(transactions)
+
   const handleShowFullDetails = () => {
     if (!toggleTable) {
       const temp = transactions.filter((el) =>
@@ -51,9 +53,7 @@ export default function TableTranction({
         <TableCell>{description}</TableCell>
         <TableCell>{count}</TableCell>
         <TableCell className="text-right">
-          <span
-            className={type !== 'debit' ? 'text-emerald-400' : 'text-rose-400'}
-          >
+          <span className="text-white">
             {currency} {Math.abs(totalAmount).toFixed(2)}
           </span>
         </TableCell>
