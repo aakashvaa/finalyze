@@ -235,19 +235,19 @@ export default function TransactionsList() {
         </div>
       ) : (
         <>
-          <div className="flex justify-end mb-4 relative z-10">
-            <label className="mr-2 text-white/90">Sort by:</label>
-            <div className="relative mr-4">
+          <div className="flex justify-end items-center mb-4 relative z-10">
+            <label className="mr-2 text-white/90 text-[14px]">Sort by:</label>
+            <div className="relative mr-4 w-20 text-[16px]">
               <button
-                className="px-3 py-1 w-20 bg-white/5 text-white/90 rounded focus:outline-none"
+                className="px-3 py-1 w-full bg-primary text-white/90 rounded focus:outline-none"
                 onClick={() => setSortCriteriaOpen(!sortCriteriaOpen)}
               >
                 {sortCriteria === 'amount' ? 'Amount' : 'Count'}
               </button>
               {sortCriteriaOpen && (
-                <div className="absolute mt-1 text-white bg-black/50 backdrop-blur-xl rounded-md shadow-lg z-20">
+                <div className="absolute w-full mt-1 p-1 text-white bg-primary backdrop-blur-xl rounded-sm shadow-lg z-20">
                   <div
-                    className="w-full px-3 py-1 hover:rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                    className="w-full px-3 py-1 hover:rounded-sm hover:bg-black/[0.3] cursor-pointer transition-colors"
                     onClick={() => {
                       setSortCriteria('amount')
                       setSortCriteriaOpen(false)
@@ -256,7 +256,7 @@ export default function TransactionsList() {
                     Amount
                   </div>
                   <div
-                    className="w-full px-3 py-1 hover:rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                    className="w-full px-3 py-1 hover:rounded-md hover:bg-black/[0.3] cursor-pointer transition-colors"
                     onClick={() => {
                       setSortCriteria('count')
                       setSortCriteriaOpen(false)
@@ -267,17 +267,17 @@ export default function TransactionsList() {
                 </div>
               )}
             </div>
-            <div className="relative">
+            <div className="relative w-24 text-[16px] text-center">
               <button
-                className="px-3 py-1 bg-white/5 text-white/90 rounded focus:outline-none"
+                className=" py-1 w-full bg-primary text-white/90 rounded focus:outline-none"
                 onClick={() => setSortOrderOpen(!sortOrderOpen)}
               >
                 {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </button>
               {sortOrderOpen && (
-                <div className="absolute mt-1 text-white bg-black/50 backdrop-blur-xl rounded-md shadow-lg z-20">
+                <div className="absolute w-full mt-1 p-1 text-white bg-primary backdrop-blur-xl rounded-sm shadow-lg z-20">
                   <div
-                    className="w-full px-3 py-1 hover:rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                    className="w-full  py-1 hover:rounded-sm hover:bg-black/[0.3] cursor-pointer transition-colors"
                     onClick={() => {
                       setSortOrder('asc')
                       setSortOrderOpen(false)
@@ -286,7 +286,7 @@ export default function TransactionsList() {
                     Ascending
                   </div>
                   <div
-                    className="w-full px-3 py-1 hover:rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                    className="w-full  py-1 hover:rounded-md hover:bg-black/[0.3] cursor-pointer transition-colors"
                     onClick={() => {
                       setSortOrder('desc')
                       setSortOrderOpen(false)
@@ -299,7 +299,10 @@ export default function TransactionsList() {
             </div>
           </div>
 
-          <div className="border rounded-lg  backdrop-blur-xl h-auto border-black/[0.01] max-h-[580px] overflow-auto shadow-sm drop-shadow-sm">
+          <div
+            id="table"
+            className="border rounded-lg  backdrop-blur-xl h-auto border-black/[0.01] max-h-[580px] relative overflow-y-auto overflow-x-hidden shadow-sm drop-shadow-sm"
+          >
             <Table>
               <TableHeader>
                 <TableRow>
@@ -308,7 +311,7 @@ export default function TransactionsList() {
                   <TableHead className="text-right">Total Amount</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="overflow-hidden">
                 {sortedData.map(([description, { totalAmount, count }]) => (
                   <TableTranction
                     key={`${select}-${description}`}

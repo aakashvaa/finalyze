@@ -7,6 +7,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
+import { useState } from 'react'
+import DetailedTableRow from './DetailedTableRow'
 export default function DetailedTable({
   transactions,
   currency,
@@ -20,7 +22,7 @@ export default function DetailedTable({
     <Table
       className={`${
         toggleTable
-          ? ' bg-black/[0.085] absolute  border-b-2 border-t-2 border-black/[0.05] '
+          ? ' bg-black/[0.085]  absolute  border-b-2 border-t-2 border-black/[0.05] overflow-hidden '
           : ''
       } cursor-default`}
     >
@@ -32,24 +34,9 @@ export default function DetailedTable({
           <TableHead className="text-right">Amount</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody className="relative overflow-hidden z-10">
         {transactions.map((transaction: TypeTransaction, index: number) => (
-          <TableRow className="hover:bg-transparent " key={index}>
-            <TableCell>{transaction.date}</TableCell>
-            <TableCell>{transaction.description.split('@')[0]}</TableCell>
-            <TableCell className="capitalize">{transaction.type}</TableCell>
-            <TableCell className="text-right">
-              <span
-                className={
-                  transaction.type === 'credit'
-                    ? 'text-emerald-400'
-                    : 'text-rose-400'
-                }
-              >
-                {currency} {Math.abs(+transaction.amount).toFixed(2)}
-              </span>
-            </TableCell>
-          </TableRow>
+          <DetailedTableRow transaction={transaction} currency={currency} />
         ))}
       </TableBody>
     </Table>

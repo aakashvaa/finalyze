@@ -38,7 +38,9 @@ export function UploadDropzone({ onDrop, loading }: UploadDropzoneProps) {
     >
       <input {...getInputProps()} disabled={loading} />
       <div
-        className={cn('w-full flex flex-col justify-center items-center gap-2')}
+        className={cn(
+          'w-full flex flex-col select-none justify-center items-center gap-2'
+        )}
       >
         {loading ? (
           <Loader2 className={cn('h-4 w-4 animate-spin')} />
@@ -63,13 +65,21 @@ export function UploadDropzone({ onDrop, loading }: UploadDropzoneProps) {
             )}
             {transactions.length === 0 && (
               <>
-                <p className={cn('text-lg font-medium')}>
-                  {loading
-                    ? 'Uploading, please wait...'
-                    : isDragActive
-                    ? 'Drop the PDF here'
-                    : 'Drag & drop a PDF file here, or click to select'}
-                </p>
+                <div className={cn('text-lg font-medium')}>
+                  {loading ? (
+                    'Uploading, please wait...'
+                  ) : isDragActive ? (
+                    'Drop the PDF here'
+                  ) : (
+                    <p>
+                      Drag & drop a{' '}
+                      <span className="text-emerald-400 tracking-wider underline decoration-1 underline-offset-8 underline-thickness-1">
+                        Bank Statement PDF
+                      </span>{' '}
+                      file here, or click to select{' '}
+                    </p>
+                  )}
+                </div>
                 <p className={cn('text-sm text-white/[0.7]')}>
                   {loading ? '' : 'Only PDF files are supported'}
                 </p>

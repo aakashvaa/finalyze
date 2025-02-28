@@ -3,8 +3,6 @@ import { TableCell, TableRow } from '../ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
 import { useState } from 'react'
 import DetailedTable from './DetailedTable'
-import { cn } from '@/lib/utils'
-import { useRef } from 'react'
 
 type TypeTableTransaaction = {
   description: string
@@ -23,13 +21,13 @@ export default function TableTranction({
 }: TypeTableTransaaction) {
   const { data } = useTransactions()
   const [toggleTable, setToggleTable] = useState(false)
-  const styleRef = useRef(null)
+  // const styleRef = useRef(null)
   const { transactions } = data
   const [selectedTransactions, setSelectedTransactions] = useState<
     TypeTransaction[]
   >([])
 
-  console.log(transactions)
+  // console.log(transactions)
 
   const handleShowFullDetails = () => {
     if (!toggleTable) {
@@ -45,7 +43,7 @@ export default function TableTranction({
   return (
     <>
       <TableRow
-        className={`cursor-pointer bg-black/20  ${
+        className={`cursor-pointer bg-black/20 overflow-hidden  ${
           toggleTable ? 'bg-black/[0.085]' : ''
         }`}
         onClick={handleShowFullDetails}

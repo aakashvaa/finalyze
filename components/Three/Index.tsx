@@ -8,6 +8,7 @@ import {
   ContactShadows,
   Environment,
   MeshTransmissionMaterial,
+  Preload,
 } from '@react-three/drei'
 import {
   Bloom,
@@ -18,10 +19,11 @@ import {
 import { easing } from 'maath'
 import { useState } from 'react'
 
+// Preloading the model using drei's GLTF loader
 useGLTF.preload('/bomb-gp.glb')
 
 export const Three = () => (
-  <div className="w-full h-full  absolute bottom-0 ">
+  <div className="w-full h-full absolute bottom-0">
     <Canvas
       eventPrefix="client"
       shadows
@@ -29,7 +31,6 @@ export const Three = () => (
     >
       <color attach="background" args={['#000']} />
       <spotLight position={[20, 20, 10]} penumbra={1} castShadow angle={0.2} />
-
       <Float floatIntensity={2} position={[0, -12, 0]}>
         <Knot />
       </Float>
@@ -54,6 +55,7 @@ export const Three = () => (
         <TiltShift2 blur={0.2} />
       </EffectComposer>
       <Rig />
+      <Preload all />
     </Canvas>
   </div>
 )
@@ -72,25 +74,26 @@ function Rig() {
     )
     state.camera.lookAt(0, 0, 0)
   })
-  return <></>
+  return null
 }
 
-const Drop = ({ ...props }: JSX.IntrinsicElements['mesh']) => (
-  <mesh>
-    <sphereGeometry args={[1, 64, 64]} />
-    <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
-  </mesh>
-)
 const Knot = (props: JSX.IntrinsicElements['mesh']) => {
   const [rotation, setRotation] = useState(0)
+  const { scene } = useGLTF('/bomb-gp.glb') //  drei optimized loader
 
   useFrame(() => {
-    setRotation((prevRotation) => prevRotation + 0.01)
+    setRotation((prev) => prev + 0.01)
   })
 
   return (
-    <mesh rotation={[0, rotation, 0]} receiveShadow castShadow {...props}>
-      <torusKnotGeometry args={[3, 1, 128, 16]} />
+    <mesh
+      rotation={[0, rotation, 0]}
+      scale={[0.5, 0.5, 0.5]}
+      receiveShadow
+      castShadow
+      {...props}
+    >
+      <primitive object={scene} />
       <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
     </mesh>
   )
