@@ -3,11 +3,12 @@ import { TableCell, TableRow } from '../ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
 import { useState } from 'react'
 import DetailedTable from './DetailedTable'
+import { NavbarType } from '@/type'
 
 type TypeTableTransaaction = {
   description: string
   count: number | undefined
-  type: string
+  type: NavbarType
   currency: string
   totalAmount: number
 }
@@ -61,6 +62,7 @@ export default function TableTranction({
         <DetailedTable
           transactions={selectedTransactions}
           currency={'INR'}
+          type={type}
           toggleTable={true}
         />
       )}

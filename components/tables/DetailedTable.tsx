@@ -7,17 +7,22 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
-import { useState } from 'react'
+
 import DetailedTableRow from './DetailedTableRow'
+import { NavbarType } from '@/type'
 export default function DetailedTable({
   transactions,
   currency,
+  type,
   toggleTable,
 }: {
   transactions: TypeTransaction[]
   currency: string
+  type: NavbarType
   toggleTable?: boolean
 }) {
+  console.log(transactions)
+
   return (
     <Table
       className={`${
@@ -36,7 +41,11 @@ export default function DetailedTable({
       </TableHeader>
       <TableBody className="relative overflow-hidden z-10">
         {transactions.map((transaction: TypeTransaction, index: number) => (
-          <DetailedTableRow transaction={transaction} currency={currency} />
+          <DetailedTableRow
+            type={type}
+            transaction={transaction}
+            currency={currency}
+          />
         ))}
       </TableBody>
     </Table>

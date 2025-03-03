@@ -1,10 +1,12 @@
-const navbars = ['details', 'credit', 'debit', 'investment', 'food', 'bill']
+import { FullNavbarType } from '@/type'
+import { navbars } from '@/utils/constant'
+
 export default function Navbar({
   select,
   setSelect,
 }: {
-  select: string
-  setSelect: (name: string) => void
+  select: FullNavbarType
+  setSelect: (name: FullNavbarType) => void
 }) {
   return (
     <div className="flex my-5 w-fit  divide-x rounded-sm flex-1 bg-black/[0.045] text-sm border-separate border border-black/[0.085] divide-black/[0.085] backdrop-blur-md  text-white">

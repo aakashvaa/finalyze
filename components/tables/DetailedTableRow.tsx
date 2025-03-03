@@ -1,20 +1,27 @@
 import { TableRow, TableCell } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { TypeTransaction } from '@/type/store/typeStore'
+import { TypeMapTransaction, TypeTransaction } from '@/type/store/typeStore'
 import { useState } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { navbars } from '@/utils/constant'
+import { useMapTransaction, useTransactions } from '@/hooks/store'
+import { NavbarType } from '@/type'
 
 export default function DetailedTableRow({
   transaction,
   currency,
+  type,
 }: {
   transaction: TypeTransaction
   currency: string
+  type: NavbarType
 }) {
+  const { dataMap, setDataMap } = useMapTransaction()
+  const { data } = useTransactions()
   const [showPopup, setShowPopup] = useState(false)
   const [showPopupNested, setShowPopupNested] = useState(false)
   const [xPosition, setXPosition] = useState(0)
@@ -49,7 +56,7 @@ export default function DetailedTableRow({
     const x = e.clientX - rect.left + 40
     const y = e.clientY - rect.top - 60
     const isNearRight = e.clientX > window.innerWidth - 650
-    const isNearBottom = e.clientY > window.innerHeight - 250
+    const isNearBottom = e.clientY > window.innerHeight - 50
     console.log(window.innerWidth, e.clientX, isNearRight)
 
     setXPositionNested(isNearRight ? 1 : 0)
@@ -57,7 +64,20 @@ export default function DetailedTableRow({
 
     setShowPopupNested(!showPopupNested)
   }
+  const handleDelete = () => {
+    console.log('delete')
+    let { description } = transaction
+    const { transactions } = data
+    // description = description.startsWith('UPI')
+    //   ? description.split('@')[0].split('-')[1]
+    //   : description.split('@')[0]
 
+    console.log(transactions.filter((el) => el.description === description))
+    // const newDataMap: TypeMapTransaction[] = dataMap[type].filter(
+    //   (el) => el.id !== transaction.id
+    // )
+    // setData({ ...data })
+  }
   return (
     <Popover open={showPopup} onOpenChange={setShowPopup}>
       <PopoverTrigger asChild>
@@ -113,17 +133,25 @@ export default function DetailedTableRow({
                   )}
                 >
                   <ul className="whitespace-nowrap">
-                    <li className="cursor-pointer py-1 px-6 hover:bg-black/[0.3] rounded-sm">
-                      table 1
-                    </li>
-
-                    <li className="cursor-pointer py-1 px-6 hover:bg-black/[0.3] rounded-sm">
-                      Table 2
-                    </li>
+                    {navbars.slice(1).map((name, i) => (
+                      <li
+                        key={`move-${name}`}
+                        className={cn(
+                          'cursor-pointer py-1 px-6 hover:bg-black/[0.3] rounded-sm',
+                          type === name && 'hidden'
+                        )}
+                      >
+                        {name.slice(0, 1).toUpperCase() +
+                          name.slice(1).toLowerCase()}
+                      </li>
+                    ))}
                   </ul>
                 </PopoverContent>
               </Popover>
-              <li className="cursor-pointer py-1 w-full hover:bg-black/[0.3] rounded-sm">
+              <li
+                onClick={handleDelete}
+                className="cursor-pointer py-1 w-full hover:bg-black/[0.3] rounded-sm"
+              >
                 Delete
               </li>
             </ul>
