@@ -122,13 +122,13 @@ export default function DetailedTableRow({
       <PopoverTrigger asChild>
         <TableRow
           onClick={handleClick} // Trigger pop-up on click
-          className={cn('hover:bg-transparent  cursor-context-menu ')}
+          className={cn('  cursor-context-menu ')}
           style={{
             borderLeft: showPopup ? '4px solid #444' : '4px solid transparent',
           }}
         >
           <TableCell>{date}</TableCell>
-          <TableCell>{description.split('@')[1]}</TableCell>
+          <TableCell>{description.split('@')[1] || description}</TableCell>
           <TableCell className="capitalize">{debitOrCredit}</TableCell>
           <TableCell className="text-right">
             <span
@@ -181,7 +181,7 @@ export default function DetailedTableRow({
                           type === el && 'hidden' // Ensure comparison uses the same variable
                         )}
                       >
-                        {el.charAt(0).toUpperCase() + el.slice(1).toLowerCase()}
+                        {el.charAt(0).toUpperCase() + el.slice(1)}
                       </li>
                     ))}
                   </ul>

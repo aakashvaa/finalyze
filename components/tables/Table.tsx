@@ -1,9 +1,10 @@
 import { useTransactions } from '@/hooks/store'
 import { TableCell, TableRow } from '../ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import DetailedTable from './DetailedTable'
 import { NavbarType } from '@/type'
+import { cn } from '@/lib/utils'
 
 type TypeTableTransaaction = {
   description: string
@@ -35,7 +36,7 @@ export default function TableTranction({
       const temp = transactions.filter(
         (el) => el.description.includes(description) && el.tableName === type
       )
-      // console.log(temp, transactions)
+      console.log(temp)
       setSelectedTransactions(temp)
     }
     setToggleTable(!toggleTable)
@@ -44,9 +45,10 @@ export default function TableTranction({
   return (
     <>
       <TableRow
-        className={`cursor-pointer bg-black/20 overflow-hidden  ${
-          toggleTable ? 'bg-black/[0.085]' : ''
-        }`}
+        className={cn(
+          'cursor-pointer w-full  overflow-hidden  bg-black/5 p-4 rounded-md border border-white/10 backdrop-blur-lg transition-all duration-300 ease-in-out',
+          toggleTable ? 'text-white scale-95' : ''
+        )}
         onClick={handleShowFullDetails}
       >
         <TableCell>{description}</TableCell>
@@ -67,13 +69,9 @@ export default function TableTranction({
         />
       )}
       {toggleTable && selectedTransactions.length > 0 && (
-        <tr>
-          <td
-            style={{
-              height: `${selectedTransactions.length * 75 + 60}px`,
-            }}
-          />
-        </tr>
+        <tr
+          style={{ height: `${selectedTransactions.length * 75 + 60}px` }}
+        ></tr>
       )}
     </>
   )

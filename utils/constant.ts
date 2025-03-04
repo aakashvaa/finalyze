@@ -93,6 +93,7 @@ const navbars = [
   'investment',
   'food',
   'bill',
+  'NA',
 ] as const
 
 export { investmentKeywords, bill, foodKeywords, navbars }

@@ -28,10 +28,10 @@ export function UploadForm() {
 
     try {
       const data = await uploadPdf(file)
-      console.log('hit', data)
+      // console.log('hit', data)
       setTransactions(data)
     } catch (error) {
-      console.log(error)
+      console.log('error while uploading parsing pdf', error)
     } finally {
       setIsUploading(false)
     }

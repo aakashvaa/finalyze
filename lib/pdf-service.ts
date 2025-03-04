@@ -1,4 +1,3 @@
-import { TableRow } from '@/components/ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
 import { bill, foodKeywords, investmentKeywords } from '@/utils/constant'
 import axios from 'axios'
@@ -53,7 +52,7 @@ function parseBankStatement(text: string) {
     const isMatch = regex.test(line)
     // console.log(line, isMatch);
     if (line.startsWith('Currency')) {
-      console.warn(line.split(' '))
+      // console.warn(line.split(' '))
       currency = line.split(' ')[2]
     }
     if (isMatch) {
@@ -70,7 +69,7 @@ function parseBankStatement(text: string) {
         const date = temp[2].match(dateRegex)?.[0] as string
         // Extract the remaining part after the date
         const rest = date ? temp[2].replace(date, '') : line
-        // console.log("hii", date, rest);
+        // console.log('hii', date, rest)
 
         const parts = rest.split('.')
         // console.warn(parts, parts[0] + "." + parts[1].substring(0, 2));
@@ -79,6 +78,7 @@ function parseBankStatement(text: string) {
         const temp2 = parts[1].slice(2) + '.' + parts[2]
 
         let firstAmount = parseFloat(temp1.replace(/,/g, '')).toFixed(2)
+        // total amount remaining after the respective transaction
         let secondAmount = parseFloat(temp2.replace(/,/g, '')).toFixed(2)
         // console.warn(line, firstAmount, secondAmount);
 
@@ -90,6 +90,7 @@ function parseBankStatement(text: string) {
         let totalCredit = 0
         let totalDebit = 0
         let tableName = ''
+        console.log(temp[1])
         const description = temp[1].startsWith('UPI')
           ? temp[1].split('@')[0].split('-')[1]
           : temp[1].split('@')[0]
@@ -142,35 +143,17 @@ function parseBankStatement(text: string) {
         })
         prev = secondAmount
       } else {
-        // console.warn("match not found", line, temp);
+        console.warn('match not found', line, temp)
         let tableName = ''
         const date = temp[0].match(dateRegex)?.[0] as string
         const description = date ? temp[0].replace(date, '') : temp[0]
-
-        // Check if the transaction matches any investment keyword
-        const isInvestment = investmentKeywords.some((keyword) =>
-          description.toUpperCase().includes(keyword)
-        )
-
-        const isFood = foodKeywords.some((keyword) => {
-          return description.toUpperCase().includes(keyword.toUpperCase())
-        })
-        const isBill = bill.some((keyword) =>
-          description.toUpperCase().includes(keyword.toUpperCase())
-        )
 
         tableRows.push({
           date,
           description,
           type: 'credit',
           amount: 'NA',
-          tableName: isBill
-            ? 'bill'
-            : isFood
-            ? 'food'
-            : isInvestment
-            ? 'investment'
-            : 'credit',
+          tableName: 'NA',
           totalAmount: 'NA',
         })
       }
@@ -181,6 +164,6 @@ function parseBankStatement(text: string) {
     currency,
     months: ['Nov'],
   }
-  console.log(data)
+  // console.log(data)
   return data
 }

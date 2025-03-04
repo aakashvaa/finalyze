@@ -10,6 +10,7 @@ import { TypeTransaction } from '@/type/store/typeStore'
 
 import DetailedTableRow from './DetailedTableRow'
 import { NavbarType } from '@/type'
+import { cn } from '@/lib/utils'
 export default function DetailedTable({
   transactions,
   setSelectedTransactions,
@@ -25,14 +26,15 @@ export default function DetailedTable({
 
   return (
     <Table
-      className={`${
+      className={cn(
         toggleTable
-          ? ' bg-black/[0.085]  absolute  border-b-2 border-t-2 border-black/[0.05] overflow-hidden '
-          : ''
-      } cursor-default`}
+          ? ' bg-black/[0.085] rounded-md absolute  overflow-hidden '
+          : '',
+        'cursor-default '
+      )}
     >
       <TableHeader>
-        <TableRow className="hover:bg-transparent ">
+        <TableRow className="hover:bg-transparent bg-transparent ">
           <TableHead>Date</TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Type</TableHead>

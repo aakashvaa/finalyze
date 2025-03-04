@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMapTransaction, useTransactions } from '@/hooks/store'
 import {
   Table,
@@ -29,6 +29,7 @@ import FinanceBoxes from './FinanceBoxes'
 import Empty from './Empty'
 import FilterBar from './FiltereBar'
 import { table } from 'console'
+import { Select } from '@react-three/drei'
 
 export default function TransactionsList() {
   const { data } = useTransactions()
@@ -42,7 +43,7 @@ export default function TransactionsList() {
 
   const { dataMap, setDataMap } = useMapTransaction()
 
-  const { transactions, currency, months } = data
+  const { transactions, currency } = data
 
   useEffect(() => {
     if (!transactions.length) {
@@ -65,8 +66,18 @@ export default function TransactionsList() {
         ? description.split('@')[0].split('-')[1]
         : description.split('@')[0]
 
+      const mapKey = tableName as NavbarType
+      if (!map[mapKey]) return
+
       const numericAmount = parseFloat(amount)
       if (isNaN(numericAmount)) {
+        // console.warn(mapKey, description, amount)
+        if (map[mapKey][description]) {
+          map[mapKey][description].totalAmount += numericAmount
+          map[mapKey][description].count += 1
+        } else {
+          map[mapKey][description] = { totalAmount: numericAmount, count: 1 }
+        }
         console.warn('amount is not a number', numericAmount)
         return
       }
@@ -81,8 +92,6 @@ export default function TransactionsList() {
       }
 
       // Use tableName dynamically for mapping
-      const mapKey = tableName as NavbarType
-      if (!map[mapKey]) return
 
       if (map[mapKey][description]) {
         map[mapKey][description].totalAmount += numericAmount
@@ -100,47 +109,56 @@ export default function TransactionsList() {
   }, [transactions])
 
   // sorting the data => the array which will be used to render the table
-  const sortedData = dataMap[select as NavbarType]
-    ? Object.entries(dataMap[select as NavbarType]).sort(
-        ([_, dataA], [__, dataB]) => {
-          const valueA =
-            sortCriteria === 'count' ? dataA.count : dataA.totalAmount
-          const valueB =
-            sortCriteria === 'count' ? dataB.count : dataB.totalAmount
+  const sortedData = useMemo(() => {
+    if (!dataMap[select as NavbarType]) return []
 
-          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA
-        }
-      )
-    : []
+    return Object.entries(dataMap[select as NavbarType]).sort(
+      ([, dataA], [, dataB]) => {
+        console.log(dataA, dataB)
+        const valueA =
+          sortCriteria === 'count' ? dataA.count : dataA.totalAmount
+        const valueB =
+          sortCriteria === 'count' ? dataB.count : dataB.totalAmount
+
+        return sortOrder === 'asc' ? valueA - valueB : valueB - valueA
+      }
+    )
+  }, [dataMap, select, sortCriteria, sortOrder])
 
   // console.log(dataMap, sortedData)
 
-  const chartData = transactions.reduce((acc, transaction) => {
-    const { date, amount, type } = transaction
-    const existingEntry = acc.find((entry) => entry.date === date)
+  const chartData = useMemo(() => {
+    return transactions.reduce((acc, transaction) => {
+      const { date, amount, type } = transaction
+      const existingEntry = acc.find((entry) => entry.date === date)
 
-    if (existingEntry) {
-      if (type === 'credit') {
-        existingEntry.creditAmount += parseFloat(amount)
-      } else if (type === 'debit') {
-        existingEntry.debitAmount += parseFloat(amount)
+      if (existingEntry) {
+        if (type === 'credit') {
+          existingEntry.creditAmount += parseFloat(amount)
+        } else if (type === 'debit') {
+          existingEntry.debitAmount += parseFloat(amount)
+        }
+      } else {
+        acc.push({
+          date,
+          creditAmount: type === 'credit' ? parseFloat(amount) : 0,
+          debitAmount: type === 'debit' ? parseFloat(amount) : 0,
+        })
       }
-    } else {
-      acc.push({
-        date,
-        creditAmount: type === 'credit' ? parseFloat(amount) : 0,
-        debitAmount: type === 'debit' ? parseFloat(amount) : 0,
-      })
-    }
 
-    return acc
-  }, [] as { date: string; creditAmount: number; debitAmount: number }[])
+      return acc
+    }, [] as { date: string; creditAmount: number; debitAmount: number }[])
+  }, [transactions])
 
   if (!transactions.length) {
     // dont show html if no transactions
     console.warn('No transactions found')
     return
   }
+  const perTableAmount = sortedData.reduce(
+    (sum, [, entry]) => sum + entry.totalAmount,
+    0
+  )
 
   return (
     <div className="my-8  font-sans  border-black/[0.5]">
@@ -168,11 +186,12 @@ export default function TransactionsList() {
             sortCriteria={sortCriteria}
             setSortOrder={setSortOrder}
             sortOrder={sortOrder}
+            perTableAmount={perTableAmount}
           />
 
           <div
             id="table"
-            className="border rounded-lg  backdrop-blur-xl h-auto border-black/[0.01] max-h-[580px] relative overflow-y-auto overflow-x-hidden shadow-sm drop-shadow-sm"
+            className=" h-auto  max-h-[580px] relative overflow-y-auto overflow-x-hidden shadow-sm drop-shadow-sm  bg-black/5  rounded-md border border-white/10 backdrop-blur-lg"
           >
             <Table>
               <TableHeader>
@@ -182,7 +201,7 @@ export default function TransactionsList() {
                   <TableHead className="text-right">Total Amount</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody className="overflow-hidden">
+              <TableBody className="overflow-hidden ">
                 {sortedData.map(([description, { totalAmount, count }]) => (
                   <TableTranction
                     key={`${select}-${description}`}
