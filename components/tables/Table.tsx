@@ -47,7 +47,7 @@ export default function TableTranction({
       <TableRow
         className={cn(
           'cursor-pointer w-full  overflow-hidden  bg-black/5 p-4 rounded-md border border-white/10 backdrop-blur-lg transition-all duration-300 ease-in-out',
-          toggleTable ? 'text-white scale-95' : ''
+          toggleTable ? 'text-white scale-95 will-change-transform' : ''
         )}
         onClick={handleShowFullDetails}
       >

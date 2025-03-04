@@ -16,7 +16,7 @@ export default function FilterBar({
   const [sortCriteriaOpen, setSortCriteriaOpen] = useState<boolean>(false)
   const [sortOrderOpen, setSortOrderOpen] = useState<boolean>(false)
   return (
-    <div className="flex justify-between items-center mb-4">
+    <div className="flex sm:flex-row gap-4 flex-col justify-between items-center mb-4">
       <div className="relative  font-medium bg-black/5 px-4 py-1 rounded-sm border border-white/10 backdrop-blur-lg flex items-center text-[14px]">
         <h3 className=" text-white/90  mr-4">Total Transaction Amount :</h3>
         <p> {perTableAmount} </p>

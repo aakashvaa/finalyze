@@ -164,59 +164,60 @@ export default function TransactionsList() {
     <div className="my-8  font-sans  border-black/[0.5]">
       <Navbar select={select} setSelect={setSelect} />
 
-      <FinanceBoxes
-        totalCreditedAmount={totalCreditedAmount}
-        totalDebitedAmount={totalDebitedAmount}
-        totalInvestmentAmount={totalInvestmentAmount}
-      />
-
-      {select == 'details' ? (
-        <DetailsSection
+      <div className="flex flex-col-reverse gap-2 md:flex-col">
+        <FinanceBoxes
           totalCreditedAmount={totalCreditedAmount}
           totalDebitedAmount={totalDebitedAmount}
           totalInvestmentAmount={totalInvestmentAmount}
-          chartData={chartData}
         />
-      ) : dataMap && sortedData?.length == 0 ? (
-        <Empty select={select} />
-      ) : (
-        <>
-          <FilterBar
-            setSortCriteria={setSortCriteria}
-            sortCriteria={sortCriteria}
-            setSortOrder={setSortOrder}
-            sortOrder={sortOrder}
-            perTableAmount={perTableAmount}
+        {select == 'details' ? (
+          <DetailsSection
+            totalCreditedAmount={totalCreditedAmount}
+            totalDebitedAmount={totalDebitedAmount}
+            totalInvestmentAmount={totalInvestmentAmount}
+            chartData={chartData}
           />
+        ) : dataMap && sortedData?.length == 0 ? (
+          <Empty select={select} />
+        ) : (
+          <>
+            <FilterBar
+              setSortCriteria={setSortCriteria}
+              sortCriteria={sortCriteria}
+              setSortOrder={setSortOrder}
+              sortOrder={sortOrder}
+              perTableAmount={perTableAmount}
+            />
 
-          <div
-            id="table"
-            className=" h-auto  max-h-[580px] relative overflow-y-auto overflow-x-hidden shadow-sm drop-shadow-sm  bg-black/5  rounded-md border border-white/10 backdrop-blur-lg"
-          >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Transaction Count</TableHead>
-                  <TableHead className="text-right">Total Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="overflow-hidden ">
-                {sortedData.map(([description, { totalAmount, count }]) => (
-                  <TableTranction
-                    key={`${select}-${description}`}
-                    type={select}
-                    totalAmount={totalAmount}
-                    description={description}
-                    count={count}
-                    currency={currency}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </>
-      )}
+            <div
+              id="table"
+              className=" h-auto  max-h-[580px] relative overflow-auto overflow-x-auto md:overflow-x-hidden shadow-sm drop-shadow-sm  bg-black/5  rounded-md border border-white/10 backdrop-blur-lg"
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Transaction Count</TableHead>
+                    <TableHead className="text-right">Total Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="overflow-hidden ">
+                  {sortedData.map(([description, { totalAmount, count }]) => (
+                    <TableTranction
+                      key={`${select}-${description}`}
+                      type={select}
+                      totalAmount={totalAmount}
+                      description={description}
+                      count={count}
+                      currency={currency}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

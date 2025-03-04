@@ -9,7 +9,7 @@ export default function Home() {
 
       <div className="absolute bg-white/[0.09] flex pt-8 overflow-y-auto items-center backdrop-blur-xl   flex-col top-0 left-0 w-full h-screen z-50">
         <LogoBar />
-        <div className="  z-50 left-0 w-full lg:w-[65%] mx-auto">
+        <div className="  z-50 left-0 w-full lg:w-[65%] p-2 mx-auto">
           <TransactionsList />
         </div>
       </div>
