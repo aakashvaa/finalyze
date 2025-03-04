@@ -5,10 +5,13 @@ import {
   TypeMapTransactionStore,
   TypeTransactionsStore,
 } from '@/type/store/typeStore'
+import { navbars } from '@/utils/constant'
 import { create } from 'zustand'
 
 export const useMapTransaction = create<TypeMapTransactionStore>((set) => ({
-  dataMap: {},
+  dataMap: Object.fromEntries(
+    navbars.slice(1).map((key) => [key, {}])
+  ) as TypeMapTransaction,
   setDataMap: (data: TypeMapTransaction) =>
     set((state) => ({ ...state, dataMap: data })),
 }))

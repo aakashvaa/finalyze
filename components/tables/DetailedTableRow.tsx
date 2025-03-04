@@ -11,6 +11,7 @@ import { navbars } from '@/utils/constant'
 import { useMapTransaction, useTransactions } from '@/hooks/store'
 import { NavbarType } from '@/type'
 import { table } from 'console'
+import { ChevronRight } from 'lucide-react'
 
 export default function DetailedTableRow({
   transaction,
@@ -38,15 +39,20 @@ export default function DetailedTableRow({
     e.preventDefault()
     setShowPopupNested(false)
     if (!showPopup) {
-      const rect = e.currentTarget.getBoundingClientRect() // Use currentTarget instead of target
-      const x = e.clientX - rect.left + 10
-      const y = e.clientY - rect.top - 60
-      // Check if clicking near the right or bottom edge
-      const isNearRight = e.clientX > window.innerWidth - 500
-      const isNearBottom = e.clientY > window.innerHeight - 150
-      console.log(window.innerWidth, e.clientX, isNearRight)
+      const table = e.currentTarget.closest('#table') // Find the parent element with id table
+      if (!table) return
 
-      //   console.log('hit 2')
+      const tableRect = table.getBoundingClientRect()
+      const rowRect = e.currentTarget.getBoundingClientRect()
+
+      const x = e.clientX - rowRect.left + 10
+      const y = e.clientY - rowRect.top - 60
+
+      const isNearRight = e.clientX > tableRect.right - 500
+      const isNearBottom = e.clientY > tableRect.bottom - 150
+
+      console.log(tableRect, e.clientX, isNearRight, isNearBottom)
+
       setXPosition(isNearRight ? x - 110 : x + 10)
       setYPosition(isNearBottom ? y - 95 : y - 10)
     }
@@ -156,18 +162,27 @@ export default function DetailedTableRow({
               <Popover open={showPopupNested} onOpenChange={setShowPopup}>
                 <PopoverTrigger asChild>
                   <div
-                    onClick={handleNested}
-                    className="cursor-pointer w-full py-1 hover:bg-black/[0.3] rounded-sm"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      // setShowPopupNested(showPopupNested)
+                    }}
+                    onMouseEnter={handleNested}
+                    onMouseLeave={() => setShowPopupNested(false)}
+                    className="cursor-pointer flex items-center justify-center gap-1 w-full py-1 hover:bg-black/[0.3] rounded-sm"
                   >
                     Move
+                    <ChevronRight size={16} />
                   </div>
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
                   side="right"
+                  onMouseEnter={() => setShowPopupNested(true)}
+                  onMouseLeave={() => setShowPopupNested(false)}
                   className={cn(
                     'bg-primary absolute translate-x-1 translate-y-1 left-0  border-none text-center p-1 w-fit text-sm',
-                    xPositionNested ? ' -left-48' : '-right-18',
+                    xPositionNested ? ' -left-56' : '-right-18',
                     yPositionNested ? '-top-10' : '-bottom-[90px]'
                   )}
                 >
