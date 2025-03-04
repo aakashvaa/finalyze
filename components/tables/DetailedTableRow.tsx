@@ -10,18 +10,23 @@ import {
 import { navbars } from '@/utils/constant'
 import { useMapTransaction, useTransactions } from '@/hooks/store'
 import { NavbarType } from '@/type'
+import { table } from 'console'
 
 export default function DetailedTableRow({
   transaction,
-  currency,
+  selectedTransactions,
+  setSelectedTransactions,
   type,
 }: {
   transaction: TypeTransaction
-  currency: string
+  selectedTransactions: TypeTransaction[]
+  setSelectedTransactions: (data: TypeTransaction[]) => void
   type: NavbarType
 }) {
-  const { dataMap, setDataMap } = useMapTransaction()
-  const { data } = useTransactions()
+  const { date, description, type: debitOrCredit, amount } = transaction
+
+  const { data, setTransactions } = useTransactions()
+  const { currency } = data
   const [showPopup, setShowPopup] = useState(false)
   const [showPopupNested, setShowPopupNested] = useState(false)
   const [xPosition, setXPosition] = useState(0)
@@ -65,19 +70,53 @@ export default function DetailedTableRow({
     setShowPopupNested(!showPopupNested)
   }
   const handleDelete = () => {
-    console.log('delete')
-    let { description } = transaction
+    console.log('delete', description)
     const { transactions } = data
-    // description = description.startsWith('UPI')
-    //   ? description.split('@')[0].split('-')[1]
-    //   : description.split('@')[0]
+    const newTransactions = transactions.filter(
+      (el) => el.description !== description
+    )
 
-    console.log(transactions.filter((el) => el.description === description))
-    // const newDataMap: TypeMapTransaction[] = dataMap[type].filter(
-    //   (el) => el.id !== transaction.id
-    // )
-    // setData({ ...data })
+    console.log(newTransactions, transactions)
+
+    setTransactions({
+      transactions: [...newTransactions],
+      currency,
+      months: data.months,
+    })
+
+    // console.log(temp, transactions)
+    setSelectedTransactions(
+      selectedTransactions.filter((el) => el.description !== description)
+    )
   }
+
+  const handleMove = (name: NavbarType) => {
+    const { transactions } = data
+    const newTransactions = transactions.map((el) => {
+      if (el.description === description) {
+        console.log('move to', name, description)
+        return {
+          ...el,
+          tableName: name,
+        }
+      }
+      return el
+    })
+
+    // console.log(newTransactions, transactions)
+
+    setTransactions({
+      transactions: [...newTransactions],
+      currency,
+      months: data.months,
+    })
+
+    console.log(newTransactions)
+    setSelectedTransactions(
+      selectedTransactions.filter((el) => el.description !== description)
+    )
+  }
+
   return (
     <Popover open={showPopup} onOpenChange={setShowPopup}>
       <PopoverTrigger asChild>
@@ -88,18 +127,18 @@ export default function DetailedTableRow({
             borderLeft: showPopup ? '4px solid #444' : '4px solid transparent',
           }}
         >
-          <TableCell>{transaction.date}</TableCell>
-          <TableCell>{transaction.description.split('@')[0]}</TableCell>
-          <TableCell className="capitalize">{transaction.type}</TableCell>
+          <TableCell>{date}</TableCell>
+          <TableCell>{description.split('@')[1]}</TableCell>
+          <TableCell className="capitalize">{debitOrCredit}</TableCell>
           <TableCell className="text-right">
             <span
               className={
-                transaction.type === 'credit'
+                debitOrCredit === 'credit'
                   ? 'text-emerald-400'
                   : 'text-rose-400'
               }
             >
-              {currency} {Math.abs(+transaction.amount).toFixed(2)}
+              {currency} {Math.abs(+amount).toFixed(2)}
             </span>
           </TableCell>
           <PopoverContent
@@ -133,16 +172,16 @@ export default function DetailedTableRow({
                   )}
                 >
                   <ul className="whitespace-nowrap">
-                    {navbars.slice(1).map((name, i) => (
+                    {navbars.slice(1).map((el, i) => (
                       <li
-                        key={`move-${name}`}
+                        key={`move-${el}`}
+                        onClick={() => handleMove(el as NavbarType)}
                         className={cn(
                           'cursor-pointer py-1 px-6 hover:bg-black/[0.3] rounded-sm',
-                          type === name && 'hidden'
+                          type === el && 'hidden' // Ensure comparison uses the same variable
                         )}
                       >
-                        {name.slice(0, 1).toUpperCase() +
-                          name.slice(1).toLowerCase()}
+                        {el.charAt(0).toUpperCase() + el.slice(1).toLowerCase()}
                       </li>
                     ))}
                   </ul>

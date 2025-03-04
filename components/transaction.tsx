@@ -15,7 +15,12 @@ import TableTranction from './tables/Table'
 import Navbar from './Navbar'
 
 import { TypeMapTransaction } from '@/type/store/typeStore'
-import { bill, foodKeywords, investmentKeywords } from '@/utils/constant'
+import {
+  bill,
+  foodKeywords,
+  investmentKeywords,
+  navbars,
+} from '@/utils/constant'
 
 import DetailsSection from './DetailsSection'
 import AmountDateChart from './charts/AmountDateChart'
@@ -23,6 +28,7 @@ import { FullNavbarType, NavbarType } from '@/type'
 import FinanceBoxes from './FinanceBoxes'
 import Empty from './Empty'
 import FilterBar from './FiltereBar'
+import { table } from 'console'
 
 export default function TransactionsList() {
   const { data } = useTransactions()
@@ -44,80 +50,45 @@ export default function TransactionsList() {
       return
     }
 
-    const map: TypeMapTransaction = {
-      credit: {},
-      debit: {},
-      investment: {},
-      food: {},
-      bill: {},
-    }
+    const map: TypeMapTransaction = Object.fromEntries(
+      navbars.slice(1).map((key) => [key, {}])
+    ) as TypeMapTransaction
 
     let totalInvestment = 0
 
     let totalCredit = 0
     let totalDebit = 0
 
-    transactions.forEach((transaction) => {
-      let { description, amount, type } = transaction
-
+    transactions.forEach(({ description, amount, type, tableName }) => {
+      // normalization of description
       description = description.startsWith('UPI')
         ? description.split('@')[0].split('-')[1]
         : description.split('@')[0]
 
-      // Check if the transaction matches any investment keyword
-      const isInvestment = investmentKeywords.some((keyword) =>
-        description.toUpperCase().includes(keyword)
-      )
-
-      const isFood = foodKeywords.some((keyword) => {
-        return description.toUpperCase().includes(keyword.toUpperCase())
-      })
-      const isBill = bill.some((keyword) =>
-        description.toUpperCase().includes(keyword.toUpperCase())
-      )
-      // finding the total investment amount, total credit amount and total debit amount
-      if (!isNaN(+amount)) {
-        if (isInvestment && type === 'debit') {
-          // console.log(+amount, description)
-          totalInvestment += parseFloat(amount)
-        } else {
-          // console.log(parseFloat(amount), description);
-          if (type === 'credit') totalCredit += parseFloat(amount)
-          else if (type === 'debit') totalDebit += parseFloat(amount)
-        }
+      const numericAmount = parseFloat(amount)
+      if (isNaN(numericAmount)) {
+        console.warn('amount is not a number', numericAmount)
+        return
       }
 
-      // making mapping table for each type of transaction
-      if (isBill) {
-        if (map.bill[description]) {
-          map.bill[description].totalAmount += +amount
-          map.bill[description].count += 1
-        } else {
-          map.bill[description] = { totalAmount: +amount, count: 1 }
-        }
-      } else if (isFood) {
-        if (map.food[description]) {
-          map.food[description].totalAmount += +amount
-          map.food[description].count += 1
-        } else {
-          map.food[description] = { totalAmount: +amount, count: 1 }
-        }
-      } else if (isInvestment) {
-        if (map.investment[description]) {
-          map.investment[description].totalAmount += +amount
-          map.investment[description].count += 1
-        } else {
-          map.investment[description] = { totalAmount: +amount, count: 1 }
-        }
+      // Update totals based on type
+      if (tableName === 'investment' && type === 'debit') {
+        totalInvestment += numericAmount
+      } else if (type === 'credit') {
+        totalCredit += numericAmount
+      } else if (type === 'debit') {
+        totalDebit += numericAmount
+      }
+
+      // Use tableName dynamically for mapping
+      const mapKey = tableName as NavbarType
+      if (!map[mapKey]) return
+
+      if (map[mapKey][description]) {
+        map[mapKey][description].totalAmount += numericAmount
+        map[mapKey][description].count += 1
       } else {
-        // Add to either credit or debit
-        if (map[type][description]) {
-          map[type][description].totalAmount += +amount
-          map[type][description].count += 1
-        } else {
-          // Miscellaneous
-          map[type][description] = { totalAmount: +amount, count: 1 }
-        }
+        map[mapKey][description] = { totalAmount: numericAmount, count: 1 }
       }
     })
 
@@ -128,27 +99,22 @@ export default function TransactionsList() {
     setDataMap(map)
   }, [transactions])
 
-  // sorting the data
+  // sorting the data => the array which will be used to render the table
+  const sortedData = dataMap[select as NavbarType]
+    ? Object.entries(dataMap[select as NavbarType]).sort(
+        ([_, dataA], [__, dataB]) => {
+          const valueA =
+            sortCriteria === 'count' ? dataA.count : dataA.totalAmount
+          const valueB =
+            sortCriteria === 'count' ? dataB.count : dataB.totalAmount
 
-  const sortedData =
-    select !== 'details' && dataMap
-      ? Object.entries(dataMap[select as NavbarType]).sort(
-          ([descA, dataA], [descB, dataB]) => {
-            const valueA =
-              sortCriteria === 'count' ? dataA.count : dataA.totalAmount
-            const valueB =
-              sortCriteria === 'count' ? dataB.count : dataB.totalAmount
+          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA
+        }
+      )
+    : []
 
-            if (sortOrder === 'asc') {
-              return valueA - valueB
-            } else {
-              return valueB - valueA
-            }
-          }
-        )
-      : []
+  // console.log(dataMap, sortedData)
 
-  console.log(dataMap, sortedData)
   const chartData = transactions.reduce((acc, transaction) => {
     const { date, amount, type } = transaction
     const existingEntry = acc.find((entry) => entry.date === date)
@@ -170,7 +136,11 @@ export default function TransactionsList() {
     return acc
   }, [] as { date: string; creditAmount: number; debitAmount: number }[])
 
-  if (!transactions.length) return null
+  if (!transactions.length) {
+    // dont show html if no transactions
+    console.warn('No transactions found')
+    return
+  }
 
   return (
     <div className="my-8  font-sans  border-black/[0.5]">
@@ -189,8 +159,7 @@ export default function TransactionsList() {
           totalInvestmentAmount={totalInvestmentAmount}
           chartData={chartData}
         />
-      ) : dataMap &&
-        Object.entries(dataMap[select as NavbarType]).length === 0 ? (
+      ) : dataMap && sortedData?.length == 0 ? (
         <Empty select={select} />
       ) : (
         <>

@@ -1,7 +1,7 @@
 import { useTransactions } from '@/hooks/store'
 import { TableCell, TableRow } from '../ui/table'
 import { TypeTransaction } from '@/type/store/typeStore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DetailedTable from './DetailedTable'
 import { NavbarType } from '@/type'
 
@@ -21,9 +21,9 @@ export default function TableTranction({
   totalAmount,
 }: TypeTableTransaaction) {
   const { data } = useTransactions()
+  const { transactions } = data
   const [toggleTable, setToggleTable] = useState(false)
   // const styleRef = useRef(null)
-  const { transactions } = data
   const [selectedTransactions, setSelectedTransactions] = useState<
     TypeTransaction[]
   >([])
@@ -32,10 +32,10 @@ export default function TableTranction({
 
   const handleShowFullDetails = () => {
     if (!toggleTable) {
-      const temp = transactions.filter((el) =>
-        el.description.includes(description)
+      const temp = transactions.filter(
+        (el) => el.description.includes(description) && el.tableName === type
       )
-      // console.log(temp);
+      // console.log(temp, transactions)
       setSelectedTransactions(temp)
     }
     setToggleTable(!toggleTable)
@@ -61,8 +61,8 @@ export default function TableTranction({
       {selectedTransactions.length !== 0 && toggleTable && (
         <DetailedTable
           transactions={selectedTransactions}
-          currency={'INR'}
           type={type}
+          setSelectedTransactions={setSelectedTransactions}
           toggleTable={true}
         />
       )}

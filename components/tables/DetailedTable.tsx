@@ -12,12 +12,12 @@ import DetailedTableRow from './DetailedTableRow'
 import { NavbarType } from '@/type'
 export default function DetailedTable({
   transactions,
-  currency,
+  setSelectedTransactions,
   type,
   toggleTable,
 }: {
   transactions: TypeTransaction[]
-  currency: string
+  setSelectedTransactions: (data: TypeTransaction[]) => void
   type: NavbarType
   toggleTable?: boolean
 }) {
@@ -42,9 +42,11 @@ export default function DetailedTable({
       <TableBody className="relative overflow-hidden z-10">
         {transactions.map((transaction: TypeTransaction, index: number) => (
           <DetailedTableRow
+            key={`${type}-${index}`}
+            setSelectedTransactions={setSelectedTransactions}
             type={type}
+            selectedTransactions={transactions}
             transaction={transaction}
-            currency={currency}
           />
         ))}
       </TableBody>
